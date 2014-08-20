@@ -42,6 +42,7 @@ class Webinterface:
         self.login()
     
     def listCategories(self):
+        """ Returns (id, series, category) iterator. """
         body, _headers = self.b.open_url(
                         "https://publiek.usc.ru.nl/publiek/laanbod.php")
         soup = BeautifulSoup(body)
@@ -61,6 +62,8 @@ class Webinterface:
             yield value, series, pool
     
     def listEntries(self, catId):
+        """ Returns iterator of
+                (date, start_time, end_time, available_slots, id) """
         body, _headers = self.b.open_url(
                     "https://publiek.usc.ru.nl/publiek/laanbod.php",
                     [("PRESET[Laanbod][inschrijving_id_pool_id][]", catId)])
@@ -92,6 +95,8 @@ class Webinterface:
             yield date, startTime, endTime, availability, accesskey
     
     def addEntry(self, accesskey):
+        """ Registers for entry with the given id, returned by list_entries.
+            To finish, call confirm.. """
         # View entry page
         body, _headers = self.b.open_url("https://publiek.usc.ru.nl/publiek/"
                                             + accesskey)
@@ -106,6 +111,7 @@ class Webinterface:
                                             + confirmkey)
     
     def confirm(self):
+        """ Confirms registrations set up by addEntry. """
         body, _headers = self.b.open_url(
                     "https://publiek.usc.ru.nl/publiek/bevestigen.php",
                          [("actie", "bevestig"), ("tabel", "klant"),
