@@ -1,9 +1,9 @@
-import vrijbrief.webinterface
+import vrijbrief.api
 
 import datetime
 
 if __name__ == '__main__':
-    wi = webinterface.Webinterface("s0814857", "test")
+    wi = api.API("s0814857", "test")
     
     catId = None
     for catId, series, pool in wi.listCategories():

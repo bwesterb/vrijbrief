@@ -14,7 +14,7 @@ class AuthenticationFailure(Exception):
     pass
 
 
-class Webinterface:
+class API:
     def login(self):
         # Prime session
         self.b.open_url("https://publiek.usc.ru.nl/publiek/login.php")
