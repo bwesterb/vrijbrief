@@ -1,10 +1,33 @@
 import vrijbrief.api
+import vrijbrief.ui
 
+import sys
+import getpass
 import datetime
+import multiprocessing
 
-if __name__ == '__main__':
-    wi = vrijbrief.api.API("s0814857", "test")
+def main():
+    #username = raw_input('user: ')
+    #password = getpass.getpass('password: ')
+
+    try:
+        api = vrijbrief.api.API('s0814857', 'test')
+    except vrijbrief.api.AuthenticationFailure:
+        print 'Authentication failed.'
+        return -1
+
+    entries = []
+    for cat in api.listCategories():
+        print cat
+        for entry in api.listEntries(cat.id):
+            entries.append(entry)
     
+
+    return 0
+
+    ui = vrijbrief.ui.VrijbriefCursesUI()
+    ui.run()
+
     catId = None
     for catId, series, pool in wi.listCategories():
         if series == "Sportkaart Ru Student  13/14" and pool == "zwemmen":
@@ -27,3 +50,6 @@ if __name__ == '__main__':
     #print "Killing all reservations"
     #for pool, date, startTime, endTime, accesskey in wi.listReservations():
     #    wi.killReservation(accesskey)
+
+if __name__ == '__main__':
+    sys.exit(main())
