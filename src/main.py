@@ -3,7 +3,7 @@ import vrijbrief.api
 import datetime
 
 if __name__ == '__main__':
-    wi = api.API("s0814857", "test")
+    wi = vrijbrief.api.API("s0814857", "test")
     
     catId = None
     for catId, series, pool in wi.listCategories():
