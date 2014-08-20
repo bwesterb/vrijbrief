@@ -1,9 +1,15 @@
-import browser
 import re
 import locale
 import datetime
+import collections
 
 from bs4 import BeautifulSoup
+
+import vrijbrief.browser
+
+category = collections.namedtuple('category', ('id', 'series', 'name'))
+entry = collections.namedtuple('entry', ('date', 'start_time', 'end_time',
+                                                'availability', 'id'))
 
 
 RX_OCCUPATION = re.compile(r"([0-9]+)/([0-9]+)")
@@ -37,7 +43,7 @@ class API:
     def __init__(self, username, password):
         self.username = username
         self.password = password
-        self.b = browser.Browser("Vrijbrief/0.1")
+        self.b = vrijbrief.browser.Browser("Vrijbrief/0.1")
         
         self.login()
     
@@ -59,7 +65,7 @@ class API:
             series = fields[1].get_text().strip()
             pool = fields[2].get_text().strip()
             
-            yield value, series, pool
+            yield category(value, series, pool)
     
     def listEntries(self, catId):
         """ Returns iterator of
@@ -92,7 +98,7 @@ class API:
             locale.setlocale(locale.LC_TIME, ("nl_NL", "utf8@euro"))
             date = datetime.datetime.strptime(date, "%a %d %b %Y").date()
             
-            yield date, startTime, endTime, availability, accesskey
+            yield entry(date, startTime, endTime, availability, accesskey)
     
     def addEntry(self, accesskey):
         """ Registers for entry with the given id, returned by list_entries.
