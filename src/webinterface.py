@@ -21,7 +21,8 @@ class Webinterface:
     
         # Submit login form
         self.b.open_url("https://publiek.usc.ru.nl/publiek/login.php",
-                        [("username", self.username), ("password", self.password)])
+                        [("username", self.username),
+                            ("password", self.password)])
         
         # Open main page; check if login was successful
         body, _headers = self.b.open_url("https://publiek.usc.ru.nl/publiek/")
@@ -30,8 +31,8 @@ class Webinterface:
         if soup.find("a", href="logout.php") is None:
             raise AuthenticationFailure
             
-        print "Logged in successfully as '%s'" % soup.find("div", "footer").string.strip()
-        pass
+        print "Logged in successfully as '%s'" \
+                % soup.find("div", "footer").string.strip()
 
     def __init__(self, username, password):
         self.username = username
@@ -39,17 +40,18 @@ class Webinterface:
         self.b = browser.Browser("Vrijbrief/0.1")
         
         self.login()
-        pass
     
     def listCategories(self):
-        body, _headers = self.b.open_url("https://publiek.usc.ru.nl/publiek/laanbod.php")
+        body, _headers = self.b.open_url(
+                        "https://publiek.usc.ru.nl/publiek/laanbod.php")
         soup = BeautifulSoup(body)
         groups = soup.find("table", rules="groups", class_="clickable_option")
         for tr in groups.find_all("tr", class_="clickabletr"):
             inputradio = tr.find("input", class_="inputradio")
             fields = tr.find_all("td")
             
-            assert inputradio["name"] == "PRESET[Laanbod][inschrijving_id_pool_id][]"
+            assert inputradio["name"] \
+                    == "PRESET[Laanbod][inschrijving_id_pool_id][]"
             
             value = inputradio["value"]
 
@@ -57,10 +59,11 @@ class Webinterface:
             pool = fields[2].get_text().strip()
             
             yield value, series, pool
-        pass
     
     def listEntries(self, catId):
-        body, _headers = self.b.open_url("https://publiek.usc.ru.nl/publiek/laanbod.php", [("PRESET[Laanbod][inschrijving_id_pool_id][]", catId)])
+        body, _headers = self.b.open_url(
+                    "https://publiek.usc.ru.nl/publiek/laanbod.php",
+                    [("PRESET[Laanbod][inschrijving_id_pool_id][]", catId)])
         soup = BeautifulSoup(body)
         
         groups = soup.find("table", rules="groups", class_="clickabletr")
@@ -76,7 +79,8 @@ class Webinterface:
             if occupation != "VOL":
                 occupation_matched = RX_OCCUPATION.match(occupation)
                 assert occupation_matched
-                availability = int(occupation_matched.groups()[1]) - int(occupation_matched.groups()[0])
+                availability = int(occupation_matched.groups()[1]) \
+                                    - int(occupation_matched.groups()[0])
             
             time_matched = RX_TIME.match(time)
             assert(time_matched)
@@ -86,11 +90,11 @@ class Webinterface:
             date = datetime.datetime.strptime(date, "%a %d %b %Y").date()
             
             yield date, startTime, endTime, availability, accesskey
-        pass
     
     def addEntry(self, accesskey):
         # View entry page
-        body, _headers = self.b.open_url("https://publiek.usc.ru.nl/publiek/" + accesskey)
+        body, _headers = self.b.open_url("https://publiek.usc.ru.nl/publiek/"
+                                            + accesskey)
         soup = BeautifulSoup(body)
         
         a = soup.find("a", class_="submitbutton")
@@ -98,19 +102,21 @@ class Webinterface:
         
         # Press on add-button
         confirmkey = a["href"]
-        body, _headers = self.b.open_url("https://publiek.usc.ru.nl/publiek/" + confirmkey)
-        pass
+        body, _headers = self.b.open_url("https://publiek.usc.ru.nl/publiek/"
+                                            + confirmkey)
     
     def confirm(self):
-        body, _headers = self.b.open_url("https://publiek.usc.ru.nl/publiek/bevestigen.php",
-                                         [("actie", "bevestig"), ("tabel", "klant"), ("kolom", "klant_id"), ("waarde", self.username)])
+        body, _headers = self.b.open_url(
+                    "https://publiek.usc.ru.nl/publiek/bevestigen.php",
+                         [("actie", "bevestig"), ("tabel", "klant"),
+                             ("kolom", "klant_id"), ("waarde", self.username)])
                         
         # Confirming logs you out; thus we need to log back in
         self.login()
-        pass
     
     def listReservations(self):
-        body, _headers = self.b.open_url("https://publiek.usc.ru.nl/publiek/overzicht.php")
+        body, _headers = self.b.open_url(
+                        "https://publiek.usc.ru.nl/publiek/overzicht.php")
         soup = BeautifulSoup(body)
         
         reservations_label = soup.find(text="Reserveringen Locaties")
@@ -136,17 +142,19 @@ class Webinterface:
             date = datetime.datetime.strptime(date, "%a %d %b %Y").date()
             
             yield pool, date, startTime, endTime, accesskey
-        pass
     
     def killReservation(self, accesskey):
-        body, _headers = self.b.open_url("https://publiek.usc.ru.nl/publiek/" + accesskey)
+        body, _headers = self.b.open_url("https://publiek.usc.ru.nl/publiek/"
+                                                    + accesskey)
         soup = BeautifulSoup(body)
         
-        linschrijving_id = soup.find("input", attrs={"name": "linschrijving_id"})["value"]
+        linschrijving_id = soup.find("input",
+                        attrs={"name": "linschrijving_id"})["value"]
         
         self.b.open_url("https://publiek.usc.ru.nl/publiek/" + accesskey,
-                        [("linschrijving_id", linschrijving_id), ("actie", "bevestig"), ("tabel", "klant"), ("kolom", "klant_id"), ("waarde", self.username)])
+                        [("linschrijving_id", linschrijving_id),
+                            ("actie", "bevestig"), ("tabel", "klant"),
+                            ("kolom", "klant_id"), ("waarde", self.username)])
         
         print "Killed %s" % linschrijving_id
         
-        pass

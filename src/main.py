@@ -1,4 +1,4 @@
-import webinterface
+import vrijbrief.webinterface
 
 import datetime
 
@@ -10,9 +10,11 @@ if __name__ == '__main__':
         if series == "Sportkaart Ru Student  13/14" and pool == "zwemmen":
             print "Using %s (%s %s)" % (catId, series, pool)
             
-            for date, startTime, endTime, availability, accesskey in wi.listEntries(catId):
+            for date, startTime, endTime, availability, accesskey \
+                            in wi.listEntries(catId):
                 print date, startTime, endTime, availability
-                if date == datetime.date(2014, 8, 18) and startTime == "09:30" and availability > 0:
+                if date == datetime.date(2014, 8, 18)
+                    and startTime == "09:30" and availability > 0:
                     wi.addEntry(accesskey)
             
             print "Confirming reservations, will get logged out"

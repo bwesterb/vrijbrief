@@ -76,6 +76,7 @@ class Browser:
             
             c.perform()
             
-            return bodyBuffer.getvalue(), self.processHeaders(headerBuffer.getvalue())
+            return (bodyBuffer.getvalue(),
+                    self.processHeaders(headerBuffer.getvalue()))
         except pycurl.error, e:
             raise BrowserError(e)
