@@ -13,7 +13,7 @@ if __name__ == '__main__':
             for date, startTime, endTime, availability, accesskey \
                             in wi.listEntries(catId):
                 print date, startTime, endTime, availability
-                if date == datetime.date(2014, 8, 18)
+                if date == datetime.date(2014, 8, 18) \
                     and startTime == "09:30" and availability > 0:
                     wi.addEntry(accesskey)
             
